@@ -6,11 +6,20 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import java.util.ArrayList;
-
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharArraySet;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
+import org.apache.lucene.analysis.core.StopAnalyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -27,12 +36,29 @@ public class CreateCranIndex
 	// Directory where the search index will be saved
 	private static String INDEX_DIRECTORY = "index";
 	private static String CRAN_DIRECTORY = "../cran";
-
-	public static void CreateIndex()
+	
+	public static final List<String> ENGLISH_STOP_WORDS = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but", "by",
+																	"for", "if", "in", "into", "is", "it",
+																	"no", "not", "of", "on", "or", "such",
+																	"that", "the", "their", "then", "there", "these",
+																	"they", "this", "to", "was", "will", "with");
+	
+	public static void CreateIndex(String analyzerType)
 	{
 		try {
+			Analyzer analyzer = null;
 			
-			Analyzer analyzer = new StandardAnalyzer();
+			Map<String,Analyzer> analyzerMap = new HashMap<>();
+			analyzerMap.put("standard", new StandardAnalyzer());
+			analyzerMap.put("stop", new StopAnalyzer(new CharArraySet(ENGLISH_STOP_WORDS, false)));
+			analyzerMap.put("simple", new SimpleAnalyzer());
+			analyzerMap.put("whitespace", new WhitespaceAnalyzer());
+			analyzerMap.put("keyword", new KeywordAnalyzer());
+			analyzerMap.put("english", new EnglishAnalyzer());
+			
+			if(analyzerMap.containsKey(analyzerType))
+				analyzer = analyzerMap.get(analyzerType);
+			else analyzer = analyzerMap.get("standard");
 	
 			// Open the directory that contains the search index
 			Directory directory;
@@ -181,11 +207,11 @@ public class CreateCranIndex
 	{
 		if (args[0].equals("create"))
 		{
-			CreateIndex();
+			CreateIndex(args[1]);
 		}
 		else if (args[0].equals("query")) 
 		{
-			QueryCranIndex.Query();
+			QueryCranIndex.Query(args[1]);
 		}
 	}
 }

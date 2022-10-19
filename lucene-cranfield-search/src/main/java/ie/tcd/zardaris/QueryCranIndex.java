@@ -4,7 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import java.nio.file.Paths;
@@ -12,6 +13,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharArraySet;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
+import org.apache.lucene.analysis.core.StopAnalyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
 import org.apache.lucene.document.Document;
@@ -43,11 +50,23 @@ public class QueryCranIndex
 	// Limit the number of search results we get
 	private static int MAX_RESULTS = 10;
 	
-	public static void Query() throws IOException, ParseException
+	public static void Query(String analyzerType) throws IOException, ParseException
 	{
 		// Analyzer used by the query parser.
 		// Must be the same as the one used when creating the index
-		Analyzer analyzer = new StandardAnalyzer();
+		Analyzer analyzer = null;
+		
+		Map<String,Analyzer> analyzerMap = new HashMap<>();
+		analyzerMap.put("standard", new StandardAnalyzer());
+		analyzerMap.put("stop", new StopAnalyzer(new CharArraySet(CreateCranIndex.ENGLISH_STOP_WORDS, false)));
+		analyzerMap.put("simple", new SimpleAnalyzer());
+		analyzerMap.put("whitespace", new WhitespaceAnalyzer());
+		analyzerMap.put("keyword", new KeywordAnalyzer());
+		analyzerMap.put("english", new EnglishAnalyzer());
+		
+		if(analyzerMap.containsKey(analyzerType))
+			analyzer = analyzerMap.get(analyzerType);
+		else analyzer = analyzerMap.get("standard");
 		
 		// Open the folder that contains our search index
 		Directory directory = FSDirectory.open(Paths.get(INDEX_DIRECTORY));
