@@ -91,7 +91,9 @@ public class QueryCranIndex
 					   if(line.equals(".W"))
 					   {
 						   content = true;
-						   line = br.readLine();  
+						   line = br.readLine();
+						   if(line.split("\\s+")[0].equals(".I"))
+							   break;
 					   }
 					   
 					   line = line.replace("?", "");
@@ -107,6 +109,9 @@ public class QueryCranIndex
 					   if(line == null)
 						   break;
 				   }
+				   
+				   if(queryString != "" && queryString.charAt(0) == ' ')
+					   queryString = queryString.substring(1);
 				   
 				   Query query = parser.parse(queryString);
 				   ScoreDoc[] hits = isearcher.search(query, MAX_RESULTS).scoreDocs;
@@ -124,7 +129,7 @@ public class QueryCranIndex
 					   System.out.println(id + " " + hitDoc.get("ID") + " " + hits[i].score);
 				   }
 
-					System.out.println();	
+				   System.out.println();	
 			   }
 			} 
 			
