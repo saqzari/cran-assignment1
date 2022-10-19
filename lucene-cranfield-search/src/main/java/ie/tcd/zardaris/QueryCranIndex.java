@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -55,12 +56,11 @@ public class QueryCranIndex
 		DirectoryReader ireader = DirectoryReader.open(directory);
 		IndexSearcher isearcher = new IndexSearcher(ireader);
 		
-		// Create the query parser. The default search field is "content", but
-		// we can use this to search across any field
-		//QueryParser parser = new QueryParser("content", analyzer);
+		// Create the query parser.
 		String[] fields = {"Title", "Author", "Bibliography", "Textual"};
 		MultiFieldQueryParser parser = new MultiFieldQueryParser(fields, analyzer);
 		
+		// query the cran index
 		queryIndex(parser, isearcher);
 		
 		// close everything and quit
@@ -71,6 +71,8 @@ public class QueryCranIndex
 	public static void queryIndex(MultiFieldQueryParser parser, IndexSearcher isearcher) throws IOException, ParseException
 	{
 		try {
+			Path path = Paths.get(RESULT_FILE);
+			Files.deleteIfExists(path);
 			BufferedReader br = new BufferedReader(new FileReader(CRAN_DIRECTORY + "/cran.qry"));
 			String line = br.readLine(); 
 			while (line != null)  
@@ -125,15 +127,13 @@ public class QueryCranIndex
 					System.out.println();	
 			   }
 			} 
+			
+			br.close();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}  
 		
-	}
-	
-	public static void main(String[] args)  throws IOException, ParseException
-	{
-		Query();
 	}
 	
 }

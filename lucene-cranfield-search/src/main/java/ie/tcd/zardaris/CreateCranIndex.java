@@ -33,9 +33,6 @@ public class CreateCranIndex
 		try {
 			
 			Analyzer analyzer = new StandardAnalyzer();
-			
-			// ArrayList of documents in the corpus
-			ArrayList<Document> documents = new ArrayList<Document>();
 	
 			// Open the directory that contains the search index
 			Directory directory;
@@ -45,32 +42,14 @@ public class CreateCranIndex
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
 			config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
 			IndexWriter iwriter = new IndexWriter(directory, config);
-			indexDocument(iwriter);
 			
-	//		for (String arg : args)
-	//		{
-	//			// Load the contents of the file
-	//			System.out.printf("Indexing \"%s\"\n", arg);
-	//			String content = new String(Files.readAllBytes(Paths.get(arg)));
-	//
-	//			// Create a new document and add the file's contents
-	//			Document doc = new Document();
-	//			doc.add(new StringField("filename", arg, Field.Store.YES));
-	//			doc.add(new TextField("content", content, Field.Store.YES));
-	//
-	//			// Add the file to our linked list
-	//			documents.add(doc);
-	//		}
-	
-			// Write all the documents in the linked list to the search index
-			//iwriter.addDocuments(documents);
+			indexDocument(iwriter);
 	
 			// Commit everything and close
 			iwriter.close();
 			directory.close();
 		
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -78,6 +57,15 @@ public class CreateCranIndex
 	public static void indexDocument(IndexWriter iwriter)
 	{
 		try {
+			ArrayList<String> types = new ArrayList<String>() { 
+	            { 
+	                add(".I"); 
+	                add(".T"); 
+	                add(".A"); 
+	                add(".B"); 
+	                add(".W"); 
+	            } 
+	        }; 
 			BufferedReader br = new BufferedReader(new FileReader(CRAN_DIRECTORY + "/cran.all.1400"));
 			String line = br.readLine(); 
 			while (line != null)  
@@ -91,33 +79,21 @@ public class CreateCranIndex
 				   String textual = "";
 				   String bibliography = "";
 				   String current = "";
-				   System.out.println(id);
+				   //System.out.println(id);
 				   line = br.readLine();
 				   
 				   while (!((line).split("\\s+")[0].equals(".I")))
 				   {
-					   if(line.equals(".T"))
+					   String fieldCheck = fieldType(line);
+					   if(!fieldCheck.equals(""))
 					   {
-						   current = "title";
-						   line = br.readLine();  
-					   }
-					   else if(line.equals(".A"))
-					   {
-						   current = "author";
-						   line = br.readLine();
-					   }
-					   else if(line.equals(".B"))
-					   {
-						   current = "bibliography";
-						   line = br.readLine();
-					   }
-					   else if(line.equals(".W"))
-					   {
-						   current = "textual";
-						   line = br.readLine();
+						   current = fieldCheck;
+						   line = br.readLine(); 
+						   if(types.contains(line) || line.split("\\s+")[0].equals(".I") )
+							   current = "none";
 					   }
 					   
-					   if(line.charAt(0) != ' ')
+					   if(line.charAt(0) != ' ' && current.equals("textual"))
 						   line = " " + line;
 					   
 					   switch(current) 
@@ -136,17 +112,31 @@ public class CreateCranIndex
 					   			break;	
 					   }
 					   
-					   line = br.readLine();
+					   if (!current.equals("none"))
+						   line = br.readLine();
 					   
 					   if(line == null)
 						   break;
 				   }
-				   System.out.println("id: " + id);
-				   System.out.println("title: " + title);
-				   System.out.println("author: " + author);
-				   System.out.println("bibliography: " + bibliography);
-				   System.out.println("textual: " + textual);
 				   
+				   if(textual != "" && textual.charAt(0) == ' ')
+					   textual = textual.substring(1);
+				   
+				   if(id.equals("995") || id.equals("996") )
+				   {
+					   System.out.println("id: " + id);
+					   System.out.println("title: " + title);
+					   System.out.println("author: " + author);
+	     			   System.out.println("bibliography: " + bibliography);
+					   System.out.println("textual: " + textual);
+				   }
+					   
+// 				   System.out.println("id: " + id);
+//				   System.out.println("title: " + title);
+//				   System.out.println("author: " + author);
+//     			   System.out.println("bibliography: " + bibliography);
+//				   System.out.println("textual: " + textual);
+//				   
 				   Document doc = new Document();
 				   doc.add(new StringField("ID", id, Field.Store.YES));
 				   doc.add(new TextField("Title", title, Field.Store.YES));
@@ -158,13 +148,34 @@ public class CreateCranIndex
 				   iwriter.addDocument(doc);
 			   }
 			} 
+			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}  
 		
 	}
-
 	
+	public static String fieldType(String line)
+	{
+	   if(line.equals(".T"))
+	   {
+		   return "title";  
+	   }
+	   else if(line.equals(".A"))
+	   {
+		   return "author";
+	   }
+	   else if(line.equals(".B"))
+	   {
+		   return "bibliography";
+	   }
+	   else if(line.equals(".W"))
+	   {
+		   return "textual";
+	   }
+	   
+	   return "";
+	}
 
 	public static void main(String[] args) throws IOException, ParseException
 	{
