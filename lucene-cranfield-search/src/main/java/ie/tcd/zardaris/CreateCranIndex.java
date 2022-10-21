@@ -1,7 +1,6 @@
 package ie.tcd.zardaris;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -11,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.nio.file.Paths;
-import java.nio.file.Files;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
@@ -28,6 +25,11 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.BooleanSimilarity;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.apache.lucene.search.similarities.LMDirichletSimilarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
  
@@ -43,9 +45,11 @@ public class CreateCranIndex
 																	"that", "the", "their", "then", "there", "these",
 																	"they", "this", "to", "was", "will", "with");
 	
-	public static void CreateIndex(String analyzerType)
+	public static void CreateIndex(String analyzerType, String similarityType)
 	{
 		try {
+			
+			// Set up the analyzer using input
 			Analyzer analyzer = null;
 			
 			Map<String,Analyzer> analyzerMap = new HashMap<>();
@@ -56,9 +60,12 @@ public class CreateCranIndex
 			analyzerMap.put("keyword", new KeywordAnalyzer());
 			analyzerMap.put("english", new EnglishAnalyzer());
 			
-			if(analyzerMap.containsKey(analyzerType))
-				analyzer = analyzerMap.get(analyzerType);
-			else analyzer = analyzerMap.get("standard");
+			if(analyzerMap.containsKey(analyzerType)) analyzer = analyzerMap.get(analyzerType);
+			else 
+			{
+				analyzer = new StandardAnalyzer();
+				analyzerType = "standard";	
+			}
 	
 			// Open the directory that contains the search index
 			Directory directory;
@@ -67,6 +74,23 @@ public class CreateCranIndex
 			// Set up an index writer to add process and save documents to the index
 			IndexWriterConfig config = new IndexWriterConfig(analyzer);
 			config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+			
+			// Set up the similarity using input
+			Map<String,Similarity> similarityMap = new HashMap<>();
+			similarityMap.put("BM25", new BM25Similarity());
+			similarityMap.put("TFIDF", new ClassicSimilarity());
+			similarityMap.put("boolean", new BooleanSimilarity());
+			similarityMap.put("LMDirichlet", new LMDirichletSimilarity());
+			
+			if(similarityMap.containsKey(similarityType)) config.setSimilarity(similarityMap.get(similarityType));
+			else 
+			{
+				config.setSimilarity(new BM25Similarity());
+				similarityType = "BM25";
+			}
+			
+			System.out.println("Index created using " + analyzerType + " analyzer and " + similarityType + " similarity.");
+			
 			IndexWriter iwriter = new IndexWriter(directory, config);
 			
 			indexDocument(iwriter);
@@ -80,6 +104,7 @@ public class CreateCranIndex
 		}
 	}
 	
+	@SuppressWarnings("serial")
 	public static void indexDocument(IndexWriter iwriter)
 	{
 		try {
@@ -105,7 +130,6 @@ public class CreateCranIndex
 				   String textual = "";
 				   String bibliography = "";
 				   String current = "";
-				   //System.out.println(id);
 				   line = br.readLine();
 				   
 				   while (!((line).split("\\s+")[0].equals(".I")))
@@ -170,7 +194,6 @@ public class CreateCranIndex
 				   doc.add(new TextField("Bibliography", bibliography, Field.Store.YES));
 				   doc.add(new TextField("Textual", textual, Field.Store.YES));
 		
-				  
 				   iwriter.addDocument(doc);
 			   }
 			} 
@@ -205,13 +228,28 @@ public class CreateCranIndex
 
 	public static void main(String[] args) throws IOException, ParseException
 	{
-		if (args[0].equals("create"))
+		if(args.length == 0)
+			System.out.println("please insert command");
+		
+		String command = "";
+		String analyzerType = "";
+		String similarityType = "";
+		
+		if(args.length > 0 ) command = args[0];
+		if(args.length > 1)	 analyzerType = args[1];
+		if(args.length > 2)	 similarityType = args[2];
+		
+		
+		if (command.equals("create"))
+			CreateIndex(analyzerType, similarityType);
+		else if (command.equals("query")) 
+			QueryCranIndex.Query(analyzerType);
+		else if (command.equals("create-query"))
 		{
-			CreateIndex(args[1]);
+			CreateIndex(analyzerType, similarityType);
+			QueryCranIndex.Query(analyzerType);
 		}
-		else if (args[0].equals("query")) 
-		{
-			QueryCranIndex.Query(args[1]);
-		}
+		else	
+			System.out.println("invalid command");
 	}
 }

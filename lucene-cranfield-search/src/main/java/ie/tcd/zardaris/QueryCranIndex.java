@@ -6,8 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
-
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,26 +20,18 @@ import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import org.apache.lucene.index.Term;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 
 public class QueryCranIndex
 {
-
 	// the location of the search index
 	private static String INDEX_DIRECTORY = "index";
 	private static String CRAN_DIRECTORY = "../cran";
@@ -64,8 +54,7 @@ public class QueryCranIndex
 		analyzerMap.put("keyword", new KeywordAnalyzer());
 		analyzerMap.put("english", new EnglishAnalyzer());
 		
-		if(analyzerMap.containsKey(analyzerType))
-			analyzer = analyzerMap.get(analyzerType);
+		if(analyzerMap.containsKey(analyzerType)) analyzer = analyzerMap.get(analyzerType);
 		else analyzer = analyzerMap.get("standard");
 		
 		// Open the folder that contains our search index
@@ -151,9 +140,7 @@ public class QueryCranIndex
 				   System.out.println();	
 			   }
 			} 
-			
 			br.close();
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}  
