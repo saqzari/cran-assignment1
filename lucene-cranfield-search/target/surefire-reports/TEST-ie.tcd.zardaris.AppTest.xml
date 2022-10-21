@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="ie.tcd.zardaris.AppTest" time="0.236" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="ie.tcd.zardaris.AppTest" time="0.273" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="awt.toolkit" value="sun.awt.X11.XToolkit"/>
     <property name="java.specification.version" value="11"/>
@@ -14,7 +14,7 @@
     <property name="os.name" value="Linux"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-11-openjdk-amd64/lib"/>
-    <property name="sun.java.command" value="/mnt/c/Users/hp/Desktop/5th Year Computer Science/Web Search/cran-assignment1/lucene-cranfield-search/target/surefire/surefirebooter15631132777036474397.jar /mnt/c/Users/hp/Desktop/5th Year Computer Science/Web Search/cran-assignment1/lucene-cranfield-search/target/surefire 2022-10-20T16-17-50_292-jvmRun1 surefire9751217860107364979tmp surefire_014283688247261187998tmp"/>
+    <property name="sun.java.command" value="/mnt/c/Users/hp/Desktop/5th Year Computer Science/Web Search/cran-assignment1/lucene-cranfield-search/target/surefire/surefirebooter3189541512606101792.jar /mnt/c/Users/hp/Desktop/5th Year Computer Science/Web Search/cran-assignment1/lucene-cranfield-search/target/surefire 2022-10-21T19-45-14_610-jvmRun1 surefire16017887597200031465tmp surefire_07832537355426765065tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/mnt/c/Users/hp/Desktop/5th Year Computer Science/Web Search/cran-assignment1/lucene-cranfield-search/target/test-classes:/mnt/c/Users/hp/Desktop/5th Year Computer Science/Web Search/cran-assignment1/lucene-cranfield-search/target/classes:/home/saqcode/.m2/repository/org/apache/lucene/lucene-core/8.6.3/lucene-core-8.6.3.jar:/home/saqcode/.m2/repository/org/apache/lucene/lucene-queryparser/8.6.3/lucene-queryparser-8.6.3.jar:/home/saqcode/.m2/repository/org/apache/lucene/lucene-queries/8.6.3/lucene-queries-8.6.3.jar:/home/saqcode/.m2/repository/org/apache/lucene/lucene-sandbox/8.6.3/lucene-sandbox-8.6.3.jar:/home/saqcode/.m2/repository/org/apache/lucene/lucene-analyzers-common/8.6.3/lucene-analyzers-common-8.6.3.jar:/home/saqcode/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/saqcode/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -30,7 +30,7 @@
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
-    <property name="surefire.real.class.path" value="/mnt/c/Users/hp/Desktop/5th Year Computer Science/Web Search/cran-assignment1/lucene-cranfield-search/target/surefire/surefirebooter15631132777036474397.jar"/>
+    <property name="surefire.real.class.path" value="/mnt/c/Users/hp/Desktop/5th Year Computer Science/Web Search/cran-assignment1/lucene-cranfield-search/target/surefire/surefirebooter3189541512606101792.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="11.0.16+8-post-Ubuntu-0ubuntu120.04"/>
     <property name="user.name" value="saqcode"/>
@@ -55,5 +55,5 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="55.0"/>
   </properties>
-  <testcase name="shouldAnswerWithTrue" classname="ie.tcd.zardaris.AppTest" time="0.005"/>
+  <testcase name="shouldAnswerWithTrue" classname="ie.tcd.zardaris.AppTest" time="0.008"/>
 </testsuite>

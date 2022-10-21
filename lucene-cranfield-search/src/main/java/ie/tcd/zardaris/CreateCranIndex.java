@@ -104,6 +104,7 @@ public class CreateCranIndex
 		}
 	}
 	
+	// Run through cran.all.1400 & add documents to index 
 	@SuppressWarnings("serial")
 	public static void indexDocument(IndexWriter iwriter)
 	{
@@ -117,6 +118,8 @@ public class CreateCranIndex
 	                add(".W"); 
 	            } 
 	        }; 
+	        
+	        // read cranfield file
 			BufferedReader br = new BufferedReader(new FileReader(CRAN_DIRECTORY + "/cran.all.1400"));
 			String line = br.readLine(); 
 			while (line != null)  
@@ -169,31 +172,19 @@ public class CreateCranIndex
 						   break;
 				   }
 				   
+				   // remove extra spaces
 				   if(textual != "" && textual.charAt(0) == ' ')
 					   textual = textual.substring(1);
 				   
-				   if(id.equals("995") || id.equals("996") )
-				   {
-					   System.out.println("id: " + id);
-					   System.out.println("title: " + title);
-					   System.out.println("author: " + author);
-	     			   System.out.println("bibliography: " + bibliography);
-					   System.out.println("textual: " + textual);
-				   }
-					   
-// 				   System.out.println("id: " + id);
-//				   System.out.println("title: " + title);
-//				   System.out.println("author: " + author);
-//     			   System.out.println("bibliography: " + bibliography);
-//				   System.out.println("textual: " + textual);
-//				   
+				   // Create document with relevant fields
 				   Document doc = new Document();
 				   doc.add(new StringField("ID", id, Field.Store.YES));
 				   doc.add(new TextField("Title", title, Field.Store.YES));
 				   doc.add(new TextField("Author", author, Field.Store.YES));
 				   doc.add(new TextField("Bibliography", bibliography, Field.Store.YES));
 				   doc.add(new TextField("Textual", textual, Field.Store.YES));
-		
+				   
+				   // add document to index
 				   iwriter.addDocument(doc);
 			   }
 			} 
@@ -204,6 +195,7 @@ public class CreateCranIndex
 		
 	}
 	
+	// Check current section of cran.all.1400
 	public static String fieldType(String line)
 	{
 	   if(line.equals(".T"))
@@ -226,6 +218,7 @@ public class CreateCranIndex
 	   return "";
 	}
 
+	// Parse command line input and run relevant functions
 	public static void main(String[] args) throws IOException, ParseException
 	{
 		if(args.length == 0)

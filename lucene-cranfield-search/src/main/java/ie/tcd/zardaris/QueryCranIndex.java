@@ -32,7 +32,6 @@ import org.apache.lucene.queryparser.classic.ParseException;
 
 public class QueryCranIndex
 {
-	// the location of the search index
 	private static String INDEX_DIRECTORY = "index";
 	private static String CRAN_DIRECTORY = "../cran";
 	private static String RESULT_FILE = "results.txt";
@@ -42,8 +41,16 @@ public class QueryCranIndex
 	
 	public static void Query(String analyzerType) throws IOException, ParseException
 	{
-		// Analyzer used by the query parser.
-		// Must be the same as the one used when creating the index
+		
+		// Check if index exists
+		Path path = Paths.get("index");
+		if(!Files.exists(path))
+		{
+			System.out.println("Error! Index directory does not exist");
+			return;
+		}
+			
+		// Set up the analyzer using input
 		Analyzer analyzer = null;
 		
 		Map<String,Analyzer> analyzerMap = new HashMap<>();
@@ -60,7 +67,7 @@ public class QueryCranIndex
 		// Open the folder that contains our search index
 		Directory directory = FSDirectory.open(Paths.get(INDEX_DIRECTORY));
 		
-		// create objects to read and search across the index
+		// Create objects to read and search across the index
 		DirectoryReader ireader = DirectoryReader.open(directory);
 		IndexSearcher isearcher = new IndexSearcher(ireader);
 		
@@ -76,6 +83,7 @@ public class QueryCranIndex
 		directory.close();
 	}
 	
+	// Run through cran.qry & use queries on created index
 	public static void queryIndex(MultiFieldQueryParser parser, IndexSearcher isearcher) throws IOException, ParseException
 	{
 		try {
@@ -91,7 +99,6 @@ public class QueryCranIndex
 				   String id = splited[1];
 				   String queryString = "";
 				   Boolean content = false;
-				   System.out.println(id);
 				   line = br.readLine();
 				   
 				   while (!((line).split("\\s+")[0].equals(".I")))
@@ -123,23 +130,19 @@ public class QueryCranIndex
 				   
 				   Query query = parser.parse(queryString);
 				   ScoreDoc[] hits = isearcher.search(query, MAX_RESULTS).scoreDocs;
-				   System.out.println("Documents: " + hits.length);
 				   for (int i = 0; i < hits.length; i++)
 				   {
 					   Document hitDoc = isearcher.doc(hits[i].doc);
 					   
 					   id = id.replaceFirst("^0+(?!$)", "");
 					   
-					   FileWriter fw = new FileWriter(RESULT_FILE, true); //the true will append the new data
-					   fw.write(id + " 0 " + hitDoc.get("ID") + " 0 " + hits[i].score + " STANDARD\n");//appends the string to the file
+					   FileWriter fw = new FileWriter(RESULT_FILE, true);
+					   fw.write(id + " 0 " + hitDoc.get("ID") + " 0 " + hits[i].score + " STANDARD\n");
 					   fw.close();
-					   
-					   System.out.println(id + " " + hitDoc.get("ID") + " " + hits[i].score);
 				   }
-
-				   System.out.println();	
 			   }
 			} 
+			System.out.println("Index queried");
 			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();
