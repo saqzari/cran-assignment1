@@ -12,7 +12,6 @@ import java.util.Map;
 import java.nio.file.Paths;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharArraySet;
-import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.core.StopAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
@@ -57,7 +56,6 @@ public class CreateCranIndex
 			analyzerMap.put("stop", new StopAnalyzer(new CharArraySet(ENGLISH_STOP_WORDS, false)));
 			analyzerMap.put("simple", new SimpleAnalyzer());
 			analyzerMap.put("whitespace", new WhitespaceAnalyzer());
-			analyzerMap.put("keyword", new KeywordAnalyzer());
 			analyzerMap.put("english", new EnglishAnalyzer());
 			
 			if(analyzerMap.containsKey(analyzerType)) analyzer = analyzerMap.get(analyzerType);
@@ -231,7 +229,6 @@ public class CreateCranIndex
 		if(args.length > 0 ) command = args[0];
 		if(args.length > 1)	 analyzerType = args[1];
 		if(args.length > 2)	 similarityType = args[2];
-		
 		
 		if (command.equals("create"))
 			CreateIndex(analyzerType, similarityType);
